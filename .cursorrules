@@ -1,0 +1,12 @@
+# AI Agent Rules for Tafutanga API
+
+- **Clean Code**: Follow SOLID principles. Use descriptive names.
+- **Performance**: Use non-blocking async/await. Rely on `pg` pool. Implement pagination for list endpoints.
+- **Comments**: Keep comments short and informative. Focus on "Why".
+- **DDD Structure**:
+  - `src/modules/{domain}/*`
+  - `controller`: Request/Response logic.
+  - `service`: Business logic / Use cases.
+  - `repository`: Data access logic.
+- **Logs**: Remove `console.log` from production code. Use structured logging if necessary.
+- **Security**: Parameterized queries only. Validate all inputs.

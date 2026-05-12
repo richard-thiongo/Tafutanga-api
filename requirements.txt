@@ -1,0 +1,12 @@
+express
+cors
+helmet
+bcryptjs
+jsonwebtoken
+cloudinary
+multer
+sharp
+dotenv
+pg
+joi
+express-rate-limit
