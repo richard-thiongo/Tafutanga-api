@@ -46,6 +46,13 @@ Handles the management of physical properties, including units, specific rooms, 
 
 ---
 
+## Heartbeat Endpoint
+
+A heartbeat is a periodic signal sent by the system to show that it's still running and healthy. You can check the health of the Tafutanga API at any time by making a GET request to the `/heartbeat` endpoint:
+- **`GET /heartbeat`**: Returns a JSON object with `status: "ok"` and a current timestamp to confirm the server is operational.
+
+---
+
 ## Running Locally
 
 1. Open a terminal in the `tafutanga-api` directory.
