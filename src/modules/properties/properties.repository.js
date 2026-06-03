@@ -77,6 +77,15 @@ const PropertiesRepository = {
     return rows;
   },
 
+  // Fetch a specific room by ID
+  async findRoomById(roomId) {
+    const { rows } = await pool.query(
+      'SELECT * FROM rooms WHERE id = $1',
+      [roomId]
+    );
+    return rows[0];
+  },
+
   // Check room ownership
   async checkRoomOwnership(roomId, landlordId) {
     const { rows } = await pool.query(
@@ -99,6 +108,14 @@ const PropertiesRepository = {
 
   // Fetch all available rooms (Public) - with pagination
   async findAllAvailable(limit = 20, offset = 0) {
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM rooms r
+       JOIN units u ON r.unit_id = u.id
+       JOIN landlord l ON u.landlord_id = l.id
+       WHERE r.rooms_available > 0 AND l.is_paused = false`
+    );
+    const totalItems = parseInt(countResult.rows[0].count, 10);
+
     const { rows } = await pool.query(
       `SELECT r.*, u.unit_name, u.county, u.place, l.full_name as landlord_name, l.phone_number as contact
        FROM rooms r
@@ -109,7 +126,8 @@ const PropertiesRepository = {
        LIMIT $1 OFFSET $2`,
       [limit, offset]
     );
-    return rows;
+
+    return { data: rows, totalItems };
   }
 };
 

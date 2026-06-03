@@ -45,6 +45,20 @@ const PropertiesService = {
     });
   },
 
+  // Extract public ID from Cloudinary URL
+  extractCloudinaryPublicId(url) {
+    if (!url) return null;
+    try {
+      const parts = url.split('/');
+      const lastPart = parts.pop();
+      const folderName = parts.pop();
+      const filenameWithoutExt = lastPart.split('.')[0];
+      return `${folderName}/${filenameWithoutExt}`;
+    } catch (e) {
+      return null;
+    }
+  },
+
   async registerUnit(landlordId, unitData) {
     return await PropertiesRepository.createUnit(landlordId, unitData);
   },
@@ -91,6 +105,20 @@ const PropertiesService = {
     const isOwner = await PropertiesRepository.checkRoomOwnership(roomId, landlordId);
     if (!isOwner) throw new Error('Unauthorized listing access');
 
+    // Attempt to delete photo from Cloudinary first
+    const room = await PropertiesRepository.findRoomById(roomId);
+    if (room && room.image_url) {
+      const publicId = this.extractCloudinaryPublicId(room.image_url);
+      if (publicId) {
+        try {
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error('Cloudinary image deletion failed for public ID:', publicId, 'Error:', err);
+          // Proceed with database deletion even if Cloudinary fails
+        }
+      }
+    }
+
     return await PropertiesRepository.deleteRoom(roomId);
   },
 
@@ -100,7 +128,15 @@ const PropertiesService = {
 
   async getAllListings(page = 1, limit = 20) {
     const offset = (page - 1) * limit;
-    return await PropertiesRepository.findAllAvailable(limit, offset);
+    const result = await PropertiesRepository.findAllAvailable(limit, offset);
+    return {
+      data: result.data,
+      meta: {
+        totalItems: result.totalItems,
+        totalPages: Math.ceil(result.totalItems / limit),
+        currentPage: page
+      }
+    };
   }
 };
 

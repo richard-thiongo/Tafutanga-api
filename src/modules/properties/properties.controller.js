@@ -91,7 +91,8 @@ const PropertiesController = {
       roomType: Joi.string().required(),
       roomsAvailable: Joi.number().integer().min(0).required(),
       price: Joi.number().min(0).required(),
-      description: Joi.string().allow('').optional()
+      description: Joi.string().allow('').optional(),
+      imageUrl: Joi.string().allow('').optional()
     });
 
     const { error: bodyError } = schemaBody.validate(req.body);
@@ -119,7 +120,8 @@ const PropertiesController = {
       roomType: Joi.string().required(),
       roomsAvailable: Joi.number().integer().min(0).required(),
       price: Joi.number().min(0).required(),
-      description: Joi.string().allow('').optional()
+      description: Joi.string().allow('').optional(),
+      imageUrl: Joi.string().allow('').optional()
     });
 
     const { error: bodyError } = schemaBody.validate(req.body);
